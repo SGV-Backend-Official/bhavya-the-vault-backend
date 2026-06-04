@@ -28,6 +28,11 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    subscriptionStatus: {
+      type: String,
+      enum: ["inactive", "active"],
+      default: "inactive",
+    },
   },
   { timestamps: true },
 );

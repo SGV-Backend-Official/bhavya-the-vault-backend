@@ -8,6 +8,18 @@ import { createTournamentController } from "../controllers/tournament/createTour
 
 import { joinTournamentController } from "../controllers/tournament/joinTournamentController.js";
 
+import { verifyPlayerController } from "../controllers/tournament/verifyPlayerController.js";
+
+import { startTournamentController } from "../controllers/tournament/startTournamentController.js";
+
+import { eliminatePlayerController } from "../controllers/tournament/eliminatePlayerController.js";
+
+import { endTournamentController } from "../controllers/tournament/endTournamentController.js";
+
+import { declareWinnerController } from "../controllers/tournament/declareWinnerController.js";
+
+import { getTournamentDetailsController } from "../controllers/tournament/getTournamentDetailsController.js";
+
 // Create a new tournament
 router.post(
   "/create",
@@ -18,5 +30,30 @@ router.post(
 
 //join a tournament
 router.post("/join", authMiddleware, joinTournamentController);
+
+// verify a player in the tournament
+router.patch("/verify-player", authMiddleware, verifyPlayerController);
+
+// start a tournament
+router.patch("/start", authMiddleware, startTournamentController);
+
+// eliminate a player from the tournament
+
+router.patch("/eliminate-player", authMiddleware, eliminatePlayerController);
+
+// end tournament
+
+router.patch("/end", authMiddleware, endTournamentController);
+
+// declare winner
+router.patch("/declare-winner", authMiddleware, declareWinnerController);
+
+// details for a tournament
+
+router.get(
+  "/details/:tournamentId",
+  authMiddleware,
+  getTournamentDetailsController,
+);
 
 export { router as tournamentRoutes };

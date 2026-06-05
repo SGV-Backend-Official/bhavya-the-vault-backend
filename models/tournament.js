@@ -34,11 +34,6 @@ const tournamentPlayerSchema = new Schema(
       type: Number,
       default: 0,
     },
-
-    isEliminated: {
-      type: Boolean,
-      default: false,
-    },
     isVerified: {
       type: Boolean,
       default: false,
@@ -59,6 +54,7 @@ const tournamentSchema = new Schema(
     gameType: {
       type: String,
       required: true,
+      default: "Tournament",
     },
     tournamentCode: {
       type: String,
@@ -110,11 +106,12 @@ const tournamentSchema = new Schema(
     currentLevel: {
       type: Number,
       default: 1,
-    },
+    }, // To track which blind level is currently active in the running tournament, which blind level is currently active during gameplay. It is used for blind progression and timer management.
+
     numberOfLevels: {
       type: Number,
       required: true,
-    },
+    }, // stores how many blind levels exist in the tournament
 
     status: {
       type: String,

@@ -43,6 +43,12 @@ const joinTournamentController = async (req, res) => {
         message: "You have already joined this tournament",
       });
     }
+    if (tournament.players.length >= 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Tournament is full. Maximum 8 players allowed.",
+      });
+    }
 
     tournament.players.push({
       player: req.user.id,

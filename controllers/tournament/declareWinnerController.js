@@ -41,7 +41,7 @@ const declareWinnerController = async (req, res) => {
     }
 
     // winner must be a participant of the tournament
-    const playerExists = tournament.players.some(
+    const winnerPlayer = tournament.players.find(
       (player) => player.player.toString() === winnerId,
     );
 
@@ -53,13 +53,33 @@ const declareWinnerController = async (req, res) => {
     }
 
     tournament.winner = winnerId;
+    // tournament.endedAt = new Date();
 
     await tournament.save();
+    // await tournament.populate("winner", "name profilePic");
+
+    // //calculate duration
+    // const durationMs = tournament.endedAt - tournament.startedAt;
+    // const durationMinutes = Math.floor(durationMs / 60000);
+    // const hours = Math.floor(durationMinutes / 60);
+    // const minutes = durationMinutes % 60;
+
+    // Get winner's total rebuys
+    // const winnerRebuys = playerExists.rebuyCount;
 
     return res.status(200).json({
       success: true,
       message: "Winner declared successfully",
-      data: tournament,
+      data: {
+        tournament,
+        // winnerSummary: {
+        //   name: tournament.winner.name,
+        //   profilePic: tournament.winner.profilePic,
+        //   // totalWinnings: tournament.totalPrizePool,
+        //   duration: { hours, minutes, display: `${hours}h ${minutes}m` },
+        //   rebuys: winnerRebuys,
+        // },
+      },
     });
   } catch (error) {
     console.error("Error declaring winner:", error);

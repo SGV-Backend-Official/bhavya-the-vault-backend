@@ -20,6 +20,9 @@ import { declareWinnerController } from "../controllers/tournament/declareWinner
 
 import { getTournamentDetailsController } from "../controllers/tournament/getTournamentDetailsController.js";
 
+import { pauseTournamentController } from "../controllers/tournament/pauseTournamentController.js";
+import { resumeTournamentController } from "../controllers/tournament/resumeTournamentController.js";
+
 // Create a new tournament
 router.post(
   "/create",
@@ -54,6 +57,21 @@ router.get(
   "/details/:tournamentId",
   authMiddleware,
   getTournamentDetailsController,
+);
+
+// pause blind timer
+
+router.patch(
+  "/pause",
+  authMiddleware,
+  subscriptionMiddleware,
+  pauseTournamentController,
+);
+router.patch(
+  "/resume",
+  authMiddleware,
+  subscriptionMiddleware,
+  resumeTournamentController,
 );
 
 export { router as tournamentRoutes };

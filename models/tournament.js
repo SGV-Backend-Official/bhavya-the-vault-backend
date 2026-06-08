@@ -139,6 +139,28 @@ const tournamentSchema = new Schema(
       type: Date,
       default: null,
     },
+    totalPrizePool: {
+      type: Number,
+      default: 0,
+    },
+    settlements: [
+      {
+        player: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        amount: {
+          type: Number,
+          required: true,
+        },
+        type: {
+          type: String,
+          enum: ["profit", "loss"],
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

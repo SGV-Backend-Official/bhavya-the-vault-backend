@@ -10,6 +10,10 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
+    profilePic: {
+      type: String,
+      default: null,
+    },
     preferredCurrency: {
       type: String,
       enum: ["USD", "EUR", "GBP", "INR"],

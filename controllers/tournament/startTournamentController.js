@@ -7,7 +7,7 @@ const startTournamentController = async (req, res) => {
     if (!tournamentId) {
       return res.status(400).json({
         success: false,
-        message: "Tournament not found",
+        message: "Tournament ID is required",
       });
     }
 
@@ -38,17 +38,12 @@ const startTournamentController = async (req, res) => {
       (player) => player.isVerified,
     );
 
-    //       if (verifiedPlayers.length < 2) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message:
-    //       "At least 2 verified players are required to start tournament",
-    //   });
-    // }
-
-    // tournament.players = tournament.players.filter(
-    //   (player) => player.isVerified,
-    // );
+    if (verifiedPlayers.length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: "At least 2 verified players are required to start tournament",
+      });
+    }
 
     tournament.status = "active";
     tournament.startedAt = new Date();

@@ -1,4 +1,5 @@
 import { Tournament } from "../../models/tournament.js";
+import { Settlement } from "../../models/settlement.js";
 
 const getTournamentDetailsController = async (req, res) => {
   try {
@@ -60,10 +61,10 @@ const getTournamentDetailsController = async (req, res) => {
     }
 
     if (tournament.winner && tournament.payoutStructure === "top_3") {
-      const winnerSettlement = tournament.settlements.find(
-        (settlement) =>
-          settlement.player.toString() === tournament.winner._id.toString(),
-      );
+      const winnerSettlement = await Settlement.findOne({
+        tournamentId: tournament._id,
+        userId: tournament.winner._id,
+      });
 
       winnerWinnings = winnerSettlement ? winnerSettlement.amount : 0;
     }

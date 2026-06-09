@@ -22,6 +22,7 @@ import { getTournamentDetailsController } from "../controllers/tournament/getTou
 
 import { pauseTournamentController } from "../controllers/tournament/pauseTournamentController.js";
 import { resumeTournamentController } from "../controllers/tournament/resumeTournamentController.js";
+import { createSettlementController } from "../controllers/tournament/createSettlementController.js";
 
 // Create a new tournament
 router.post(
@@ -60,18 +61,22 @@ router.get(
 );
 
 // pause blind timer
-
 router.patch(
   "/pause",
   authMiddleware,
   subscriptionMiddleware,
   pauseTournamentController,
 );
+
+// resume blind timer
 router.patch(
   "/resume",
   authMiddleware,
   subscriptionMiddleware,
   resumeTournamentController,
 );
+
+// create settlement records
+router.post("/settlement", authMiddleware, createSettlementController);
 
 export { router as tournamentRoutes };

@@ -28,16 +28,23 @@ const eliminatePlayerController = async (req, res) => {
       });
     }
 
-    const playerExists = tournament.players.some(
+    const playerToEliminate = tournament.players.find(
       (player) => player.player.toString() === playerId,
     );
 
-    if (!playerExists) {
+    if (!playerToEliminate) {
       return res.status(404).json({
         success: false,
-        message: "Player not found in the tournament",
+        message: "Player not found in tournament",
       });
     }
+    if (!playerToEliminate.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Only verified players can be eliminated",
+      });
+    }
+
     // console.log("Tournament Host:", tournament.createdBy.toString());
     // console.log("Logged In User:", req.user.id);
 

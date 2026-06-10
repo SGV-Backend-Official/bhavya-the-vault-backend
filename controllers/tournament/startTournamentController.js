@@ -44,6 +44,11 @@ const startTournamentController = async (req, res) => {
         message: "At least 2 verified players are required to start tournament",
       });
     }
+    tournament.players.forEach((player) => {
+      if (player.isVerified) {
+        player.isActive = true;
+      }
+    });
 
     tournament.status = "active";
     tournament.startedAt = new Date();

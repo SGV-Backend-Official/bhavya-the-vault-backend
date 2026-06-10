@@ -69,6 +69,13 @@ const getTournamentDetailsController = async (req, res) => {
       winnerWinnings = winnerSettlement ? winnerSettlement.amount : 0;
     }
 
+    // const activePlayers = tournament.players.filter(
+    //   (player) => player.isActive,
+    // );
+    // const waitingPlayers = tournament.players.filter(
+    //   (player) => !player.isActive,
+    // );
+
     const tournamentSummary = {
       winnerName: tournament.winner?.fullName || null,
       totalWinnings: winnerWinnings,

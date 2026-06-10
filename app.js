@@ -4,6 +4,7 @@ import { authRoutes } from "./routes/authRoutes.js";
 import { gameRoutes } from "./routes/gameRoutes.js";
 import { playerRoutes } from "./routes/playerRoutes.js";
 import { tournamentRoutes } from "./routes/tournamentRoutes.js";
+import { settlementRoutes } from "./routes/settlementRoutes.js";
 
 const app = express();
 
@@ -14,4 +15,5 @@ app.use("/api/auth/", authRoutes);
 app.use("/api/game/", gameRoutes);
 app.use("/api/player/", playerRoutes);
 app.use("/api/tournament/", tournamentRoutes);
+app.use("/api/settlement", settlementRoutes);
 export { app };

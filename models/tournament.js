@@ -38,6 +38,10 @@ const tournamentPlayerSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
 
     currentStack: {
       type: Number,

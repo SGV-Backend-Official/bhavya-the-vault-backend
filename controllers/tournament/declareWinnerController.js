@@ -45,10 +45,10 @@ const declareWinnerController = async (req, res) => {
       (player) => player.player.toString() === winnerId,
     );
 
-    if (!playerExists) {
+    if (!winnerPlayer?.isActive) {
       return res.status(400).json({
         success: false,
-        message: "Winner must be a tournament participant",
+        message: "Winner must be an active player",
       });
     }
 

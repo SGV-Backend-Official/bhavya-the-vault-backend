@@ -28,6 +28,12 @@ const eliminatePlayerController = async (req, res) => {
       });
     }
 
+    if (tournament.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Only host can eliminate players",
+      });
+    }
     const playerToEliminate = tournament.players.find(
       (player) => player.player.toString() === playerId,
     );
@@ -38,22 +44,16 @@ const eliminatePlayerController = async (req, res) => {
         message: "Player not found in tournament",
       });
     }
-    if (!playerToEliminate.isVerified) {
+
+    if (!playerToEliminate.isActive) {
       return res.status(400).json({
         success: false,
-        message: "Only verified players can be eliminated",
+        message: "Only active players can be eliminated",
       });
     }
-
     // console.log("Tournament Host:", tournament.createdBy.toString());
     // console.log("Logged In User:", req.user.id);
 
-    if (tournament.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: "Only host can eliminate players",
-      });
-    }
     //Prevent host from eliminating himself
 
     if (tournament.createdBy.toString() === playerId) {

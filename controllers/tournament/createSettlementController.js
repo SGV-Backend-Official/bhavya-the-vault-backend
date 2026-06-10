@@ -5,7 +5,7 @@ const createSettlementController = async (req, res) => {
   try {
     const { tournamentId, settlements } = req.body;
 
-    if (!tournament) {
+    if (!tournamentId) {
       return res.status(400).json({
         success: false,
         message: "Tournament ID is required",
@@ -58,38 +58,52 @@ const createSettlementController = async (req, res) => {
         message: "Settlements already created for this tournament",
       });
     }
-    const tournamentPlayerIds = tournament.players.map((player) =>
-      player.player.toString(),
-    );
+    const tournamentPlayerIds = tournament.players
+      .filter((player) => player.isActive)
+      .map((player) => player.player.toString());
 
     const settlementDocuments = [];
 
     for (const item of settlements) {
-      const { playerId, type, amount } = item;
+      const { userId, type, amount } = item;
 
-      if (!playerId || !type || amount == null) {
+      if (!userId || !type || amount == null) {
         return res.status(400).json({
           success: false,
           message: "Invalid settlement data",
         });
       }
 
-      if (!tournamentPlayerIds.includes(playerId)) {
+      if (!tournamentPlayerIds.includes(userId)) {
         return res.status(400).json({
           success: false,
-          message: `Player ${playerId} is not part of this tournament`,
+          message: `Player ${userId} is not part of this tournament`,
         });
       }
 
       const settlementDoc = {
         tournamntId,
-        userId: playerId,
+        userId,
         payableAmount: type === "loss" ? amount : 0,
         receivableAmount: type === "profit" ? amount : 0,
         netAmount: type === "profit" ? amount : -amount,
       };
 
       settlementDocuments.push(settlementDoc);
+    }
+    const totalProfit = settlements
+      .filter((s) => s.type === "profit")
+      .reduce((sum, s) => sum + s.amount, 0);
+
+    const totalLoss = settlements
+      .filter((s) => s.type === "loss")
+      .reduce((sum, s) => sum + s.amount, 0);
+
+    if (totalProfit !== totalLoss) {
+      return res.status(400).json({
+        success: false,
+        message: "Total profit and total loss must be equal",
+      });
     }
 
     const createdSettlements = await Settlement.insertMany(settlementDocuments);
@@ -99,7 +113,7 @@ const createSettlementController = async (req, res) => {
       message: "Settlements created successfully!",
       data: createdSettlements,
     });
-  } catch (eroror) {
+  } catch (error) {
     console.error("Error creating settlements:", error);
 
     return res.status(500).json({

@@ -53,8 +53,8 @@ const joinTournamentController = async (req, res) => {
     tournament.players.push({
       player: req.user.id,
       isVerified: false,
+      isActive: false,
       rebuyCount: 0,
-      isEliminated: false,
       currentStack: tournament.startingStack,
     });
 

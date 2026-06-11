@@ -1,6 +1,9 @@
 import { User } from "../../models/User.js";
 import { generateOTP } from "../../utils/generateOTP.js";
 import { sendEmail } from "../../utils/sendEmail.js";
+import { resetPasswordTemplate } from "../../templates/resetPasswordTemplate.js";
+
+import { EMAIL_SUBJECTS } from "../../constants/emailSubjects.js";
 
 const resendResetOtp = async (req, res) => {
   try {
@@ -30,23 +33,17 @@ const resendResetOtp = async (req, res) => {
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
+    const html = resetPasswordTemplate({
+      name: user.fullName,
+      otp,
+    });
+
     await sendEmail({
       to: user.email,
-      subject: "Password Reset Request - The Vault",
-      html: `
-        <h2>Password Reset Request</h2>
-
-        <p>Hello ${user.fullName},</p>
-
-        <p>Your password reset OTP is:</p>
-
-        <h1>${otp}</h1>
-
-        <p>This OTP is valid for 10 minutes.</p>
-
-        <p>If you did not request this, please ignore this email.</p>
-        `,
+      subject: EMAIL_SUBJECTS.RESET_PASSWORD,
+      html,
     });
+
     return res.status(200).json({
       success: true,
       message: "OTP resent to email",

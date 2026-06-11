@@ -2,6 +2,9 @@ import { hash } from "bcryptjs";
 import { User } from "../../models/User.js";
 import { generateOTP } from "../../utils/generateOTP.js";
 import { sendEmail } from "../../utils/sendEmail.js";
+import { verifyEmailTemplate } from "../../templates/verifyEmailTemplate.js";
+
+import { EMAIL_SUBJECTS } from "../../constants/emailSubjects.js";
 
 const signup = async (req, res) => {
   try {
@@ -30,16 +33,14 @@ const signup = async (req, res) => {
       otpExpiry,
     });
 
+    const html = verifyEmailTemplate({
+      name: fullName,
+      otp,
+    });
     await sendEmail({
       to: email,
-      subject: "Email Verification - The Vault",
-      html: `
-    <h2>Email Verification</h2>
-    <p>Hello ${fullName},</p>
-    <p>Your OTP is:</p>
-    <h1>${otp}</h1>
-    <p>This OTP is valid for 10 minutes.</p>
-  `,
+      subject: EMAIL_SUBJECTS.VERIFY_EMAIL,
+      html,
     });
 
     return res.status(201).json({

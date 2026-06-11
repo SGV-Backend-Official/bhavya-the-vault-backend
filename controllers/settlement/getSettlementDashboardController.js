@@ -1,3 +1,5 @@
+import { RESPONSE_MESSAGES } from "../../constants/responseMessages.js";
+import { STATUS_CODES } from "../../constants/statusCodes.js";
 import {
   getSettlementListData,
   getSettlementDashboardData,
@@ -9,20 +11,24 @@ const getSettlementDashboardController = async (req, res) => {
 
     const settlements = await getSettlementListData();
 
-    return res.status(200).json({
-      success: true,
-      data: {
+    return successResponse(
+      res,
+      RESPONSE_MESSAGES.COMMON.RECORDS_FETCHED,
+      {
         dashboard,
         settlements,
       },
-    });
+      STATUS_CODES.SUCCESS,
+    );
   } catch (error) {
     console.error("Error fetching settlement dashboard data:", error);
 
-    return res.status(500).json({
-      success: false,
-      message: "An error occured while fetching settlement dashboard data",
-    });
+    return errorResponse(
+      res,
+      RESPONSE_MESSAGES.COMMON.INTERNAL_SERVER_ERROR,
+      error.message,
+      STATUS_CODES.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 

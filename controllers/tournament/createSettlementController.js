@@ -1,51 +1,65 @@
 import { Tournament } from "../../models/tournament.js";
 import { Settlement } from "../../models/settlement.js";
+import { RESPONSE_MESSAGES } from "../../constants/responseMessages.js";
+import { STATUS_CODES } from "../../constants/statusCodes.js";
 
 const createSettlementController = async (req, res) => {
   try {
     const { tournamentId, settlements } = req.body;
 
     if (!tournamentId) {
-      return res.status(400).json({
-        success: false,
-        message: "Tournament ID is required",
-      });
+      return errorResponse(
+        res,
+        "Tournament ID is required",
+        null,
+        STATUS_CODES.BAD_REQUEST,
+      );
     }
 
     if (!Array.isArray(settlements) || settlements.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Settlement data is required",
-      });
+      return errorResponse(
+        res,
+        "Settlement data is required",
+        null,
+        STATUS_CODES.BAD_REQUEST,
+      );
     }
 
     const tournament = await Tournament.findById(tournamentId);
 
     if (!tournament) {
-      return res.status(404).json({
-        succeess: false,
-        message: "Tournament not found",
-      });
+      return errorResponse(
+        res,
+        RESPONSE_MESSAGES.TOURNAMENT.NOT_FOUND,
+        null,
+        STATUS_CODES.NOT_FOUND,
+      );
     }
 
     if (tournament.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: "Only host can create settlements",
-      });
+      return errorResponse(
+        res,
+        "Only host can create settlements",
+        null,
+        STATUS_CODES.UNAUTHORIZED,
+      );
     }
 
     if (tournament.status !== "completed") {
-      return res.status(400).json({
-        success: false,
-        message: "Tournament must be completed first",
-      });
+      return errorResponse(
+        res,
+        "Tournament must be completed first",
+        null,
+        STATUS_CODES.BAD_REQUEST,
+      );
     }
     if (!tournament.winner) {
-      return res.status(400).json({
-        success: false,
-        message: "Winner must be declared before creating settlements",
-      });
+      return errorResponse(
+        res,
+        "Winner must be declared before creating settlements",
+        null,
+        STATUS_CODES.BAD_REQUEST,
+      );
     }
 
     const existingSettlememt = await Settlement.findOne({
@@ -68,21 +82,25 @@ const createSettlementController = async (req, res) => {
       const { userId, type, amount } = item;
 
       if (!userId || !type || amount == null) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid settlement data",
-        });
+        return errorResponse(
+          res,
+          "Invalid settlement data",
+          null,
+          STATUS_CODES.BAD_REQUEST,
+        );
       }
 
       if (!tournamentPlayerIds.includes(userId)) {
-        return res.status(400).json({
-          success: false,
-          message: `Player ${userId} is not part of this tournament`,
-        });
+        return errorResponse(
+          res,
+          `Player ${userId} is not part of this tournament`,
+          null,
+          STATUS_CODES.BAD_REQUEST,
+        );
       }
 
       const settlementDoc = {
-        tournamntId,
+        tournamentId,
         userId,
         payableAmount: type === "loss" ? amount : 0,
         receivableAmount: type === "profit" ? amount : 0,
@@ -100,26 +118,30 @@ const createSettlementController = async (req, res) => {
       .reduce((sum, s) => sum + s.amount, 0);
 
     if (totalProfit !== totalLoss) {
-      return res.status(400).json({
-        success: false,
-        message: "Total profit and total loss must be equal",
-      });
+      return errorResponse(
+        res,
+        "Total profit and total loss must be equal",
+        null,
+        STATUS_CODES.BAD_REQUEST,
+      );
     }
 
     const createdSettlements = await Settlement.insertMany(settlementDocuments);
 
-    return res.status(201).json({
-      success: true,
-      message: "Settlements created successfully!",
-      data: createdSettlements,
-    });
+    return successResponse(
+      res,
+      RESPONSE_MESSAGES.SETTLEMENT.CREATED,
+      createdSettlements,
+      STATUS_CODES.SUCCESS,
+    );
   } catch (error) {
     console.error("Error creating settlements:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred while creating settlements",
-    });
+    return errorResponse(
+      res,
+      "An error occurred while creating settlements",
+      error.message,
+      STATUS_CODES.INTERNAL_SERVER_ERROR,
+    );
   }
 };
 

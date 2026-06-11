@@ -1,6 +1,9 @@
 import { User } from "../../models/User.js";
 import { generateOTP } from "../../utils/generateOTP.js";
 import { sendEmail } from "../../utils/sendEmail.js";
+import { verifyEmailTemplate } from "../../templates/verifyEmailTemplate.js";
+
+import { EMAIL_SUBJECTS } from "../../constants/emailSubjects.js";
 
 const resendOtp = async (req, res) => {
   try {
@@ -24,21 +27,17 @@ const resendOtp = async (req, res) => {
     user.otp = otp;
     user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
+    const html = verifyEmailTemplate({
+      name: user.fullName,
+      otp,
+    });
+
     await sendEmail({
       to: user.email,
-      subject: "Email Verification - The Vault",
-      html: `
-        <h2>Email Verification</h2>
-
-        <p>Hello ${user.fullName},</p>
-
-        <p>Your OTP is:</p>
-
-        <h1>${otp}</h1>
-
-        <p>This OTP is valid for 10 minutes.</p>
-      `,
+      subject: EMAIL_SUBJECTS.VERIFY_EMAIL,
+      html,
     });
+
     return res
       .status(200)
       .json({ success: true, message: "OTP resent to email" });

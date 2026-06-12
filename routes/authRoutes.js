@@ -1,12 +1,23 @@
 import { Router } from "express";
 const router = Router();
 
-import { signup } from "../controllers/auth/signupController.js";
+// import { signup } from "../controllers/auth/signupController.js";
 
-import { login } from "../controllers/auth/loginController.js";
-import { refreshToken } from "../controllers/auth/refreshTokenController.js";
+// import { login } from "../controllers/auth/loginController.js";
+// import { refreshToken } from "../controllers/auth/refreshTokenController.js";
+import {
+  signup,
+  verifyEmail,
+  login,
+  refreshToken,
+  resendOtp,
+  forgotPassword,
+  verifyResetOtp,
+  resendResetOtp,
+  resetPassword,
+} from "../controllers/authController.js";
+
 import { authMiddleware } from "../middleware/authMiddleware.js";
-
 import {
   signupValidation,
   loginValidation,
@@ -18,17 +29,17 @@ import {
   resetPasswordValidation,
 } from "../validators/authValidators.js";
 
-import { verifyEmail } from "../controllers/auth/verifyEmailController.js";
+// import { verifyEmail } from "../controllers/auth/verifyEmailController.js";
 
-import { resendOtp } from "../controllers/auth/resendOTPController.js";
+// import { resendOtp } from "../controllers/auth/resendOTPController.js";
 
-import { forgotPassword } from "../controllers/auth/forgotPasswordController.js";
+// import { forgotPassword } from "../controllers/auth/forgotPasswordController.js";
 
-import { verifyResetOtp } from "../controllers/auth/verifyResetOtpController.js";
+// import { verifyResetOtp } from "../controllers/auth/verifyResetOtpController.js";
 
-import { resendResetOtp } from "../controllers/auth/resendResetOtpController.js";
+// import { resendResetOtp } from "../controllers/auth/resendResetOtpController.js";
 
-import { resetPassword } from "../controllers/auth/resetPasswordController.js";
+// import { resetPassword } from "../controllers/auth/resetPasswordController.js";
 
 router.post("/signup", signupValidation, signup);
 router.post("/login", loginValidation, login);

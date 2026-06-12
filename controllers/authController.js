@@ -7,10 +7,11 @@ import bcrypt from "bcryptjs";
 import { generateAccessToken } from "../utils/generateAccessToken.js";
 import { generateRefreshToken } from "../utils/generateRefreshToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
-import { verifyEmailTemplate } from "../templates/verifyEmailTemplate.js";
-import { resetPasswordTemplate } from "../templates/resetPasswordTemplate.js";
+// import { verifyEmailTemplate } from "../templates/verifyEmailTemplate.js";
+// import { resetPasswordTemplate } from "../templates/resetPasswordTemplate.js";
 import { EMAIL_SUBJECTS } from "../constants/emailSubjects.js";
 import { generateOTP } from "../utils/generateOTP.js";
+import { renderEmailTemplate } from "../utils/renderEmail.js";
 
 const signup = asyncHandler(async (req, res) => {
   const { fullName, email, preferredCurrency, password } = req.body;
@@ -40,11 +41,12 @@ const signup = asyncHandler(async (req, res) => {
   });
 
   // Send verification email
-  const html = verifyEmailTemplate({
+  const html = await renderEmailTemplate("verifyEmail", {
+    title: "Email Verification",
+    emailGreeting: `Hello ${fullName},`,
     name: fullName,
     otp,
   });
-
   await sendEmail({
     to: email,
     subject: EMAIL_SUBJECTS.VERIFY_EMAIL,
@@ -159,7 +161,8 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  const html = resetPasswordTemplate({
+  const html = await renderEmailTemplate("resetPassword", {
+    title: "Password Reset",
     name: user.fullName,
     otp,
   });
@@ -223,7 +226,9 @@ const resendOtp = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  const html = verifyEmailTemplate({
+  const html = await renderEmailTemplate("verifyEmail", {
+    title: "Email Verification",
+    emailGreeting: `Hello ${fullName},`,
     name: user.fullName,
     otp,
   });
@@ -339,7 +344,8 @@ const resendResetOtp = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  const html = resetPasswordTemplate({
+  const html = await renderEmailTemplate("resetPassword", {
+    title: "Password Reset",
     name: user.fullName,
     otp,
   });
